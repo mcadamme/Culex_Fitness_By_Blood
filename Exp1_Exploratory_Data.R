@@ -3,6 +3,8 @@
 #Authors: Mervin Keith Cuadera and Megan L. Fritz
 #Date: July 06, 2018
 
+#hi 
+
 # Setting Up Data Sets ----------------------------------------------------
 Exp_1_data <- read.csv(file = "~/Desktop/Host_Blood_Fitness_Study_Replicates.csv",header = T)
 head(Exp_1_data)
