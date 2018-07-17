@@ -9,7 +9,7 @@
 #07/06/2018: noticed an outlier for blood imbibed on Evanston (5 mg!), removed it. Suspected human error.
 # Set Up and Working Directories and Libraries-----------------------------------------
 
-Exp_3_Data <- read.csv(file="~/Desktop/CSV_Blood_Meal_Weight_Data.csv", header = T)
+Exp_3_Data <- read.csv(file="~/Desktop/Mervin-Culex_Fitness_By_Blood/data/Exp3_CSV_Blood_Meal_Weight_Data.csv", header = T)
 head(Exp_3_Data)
 Exp_3_Data_Outlier_Removed <- subset(Exp_3_Data, Blood_Imbibed < 4)
 With_eggs <- subset(Exp_3_Data, Eggs_Produced > 0)

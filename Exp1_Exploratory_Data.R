@@ -3,10 +3,8 @@
 #Authors: Mervin Keith Cuadera and Megan L. Fritz
 #Date: July 06, 2018
 
-#hi 
-
 # Setting Up Data Sets ----------------------------------------------------
-Exp_1_data <- read.csv(file = "~/Desktop/Host_Blood_Fitness_Study_Replicates.csv",header = T)
+Exp_1_data <- read.csv(file = "~/Desktop/Mervin-Culex_Fitness_By_Blood/data/Exp1_Host_Blood_Fitness_Study_Replicates.csv",header = T)
 head(Exp_1_data)
 Exp_1_data$No_eggs_per_fem <- Exp_1_data$Total_Egg_Produced/Exp_1_data$No_Fed
 Fed_only <- subset(Exp_1_data, No_Fed > 0)
@@ -16,13 +14,6 @@ Fed_only_mammalian <- subset(Fed_only, Host_Type =="mammalian")
 Fed_only_avian <- subset(Fed_only, Host_Type == "avian")
 Fed_only_molestus <- subset(Fed_only, Form =="m")
 Fed_only_pip <- subset(Fed_only, Form =="p")
-
-Fed_only_bovine <- subset(Fed_only, Treatment =="Bovine")
-Fed_only_rabbit <- subset(Fed_only, Treatment =="Rabbit")
-Fed_only_equine <- subset(Fed_only, Treatment =="Equine")
-Fed_only_goose <- subset(Fed_only, Treatment =="Goose")
-Fed_only_chicken <- subset(Fed_only, Treatment =="Chix")
-Fed_only_turkey <- subset(Fed_only, Treatment =="Turkey")
 
 Fed_only_mol_bovine <- subset(Fed_only_molestus, Treatment =="Bovine")
 Fed_only_mol_rabbit <- subset(Fed_only_molestus, Treatment =="Rabbit")
@@ -43,7 +34,7 @@ data_summary <- function(data, varname, groupnames){
   summary_func <- function(x, col){
     c(mean = mean(x[[col]], na.rm=TRUE),
       sd = sd(x[[col]], na.rm=TRUE),
-      N = length(x[[col]]))}
+      No_Replicates = length(x[[col]]))}
   
   data_sum<-ddply(data, groupnames, .fun=summary_func,
                   varname)
@@ -99,30 +90,29 @@ Boot_strap_CI <- with(Fed_only,tapply(No_eggs_per_fem,list(Strain, Treatment), b
 
 # Data Summaries ----------------------------------------------------------
 #summarizing the data
-Exp_1_Data_2 <- data_summary(Fed_only, varname = "No_eggs_per_fem", groupnames = c("Strain", "Treatment"))
-Exp_1_Data_2$se <- Exp_1_Data_2$sd / sqrt(Exp_1_Data_2$N)
+Exp_1_Data_Summary <- data_summary(Fed_only, varname = "No_eggs_per_fem", groupnames = c("Strain", "Treatment"))
+Exp_1_Data_Summary$se <- Exp_1_Data_Summary$sd / sqrt(Exp_1_Data_Summary$No_Replicates)
 head(Exp_1_Data_2)
 
 Exp_1_Data_Mammalian <- data_summary(Fed_only_mammalian, varname = "No_eggs_per_fem", groupnames = c("Strain", "Treatment"))
-Exp_1_Data_Mammalian$se <- Exp_1_Data_Mammalian$sd / sqrt(Exp_1_Data_Mammalian$N)
+Exp_1_Data_Mammalian$se <- Exp_1_Data_Mammalian$sd / sqrt(Exp_1_Data_Mammalian$No_Replicates)
 head(Exp_1_Data_Mammalian)
 
 Exp_1_Data_Avian <- data_summary(Fed_only_avian, varname = "No_eggs_per_fem", groupnames = c("Strain", "Treatment"))
-Exp_1_Data_Avian$se <- Exp_1_Data_Avian$sd / sqrt(Exp_1_Data_Avian$N)
+Exp_1_Data_Avian$se <- Exp_1_Data_Avian$sd / sqrt(Exp_1_Data_Avian$No_Replicates)
 head(Exp_1_Data_Avian)
 
 Exp_1_Data_Molestus <- data_summary(Fed_only_molestus, varname = "No_eggs_per_fem", groupnames = c("Strain", "Treatment"))
-Exp_1_Data_Molestus$se <- Exp_1_Data_Molestus$sd / sqrt(Exp_1_Data_Molestus$N)
+Exp_1_Data_Molestus$se <- Exp_1_Data_Molestus$sd / sqrt(Exp_1_Data_Molestus$No_Replicates)
 head(Exp_1_Data_Molestus)
 
 Exp_1_Data_Pip <- data_summary(Fed_only_pip, varname = "No_eggs_per_fem", groupnames = c("Strain", "Treatment"))
-Exp_1_Data_Pip$se <- Exp_1_Data_Pip$sd / sqrt(Exp_1_Data_Pip$N)
+Exp_1_Data_Pip$se <- Exp_1_Data_Pip$sd / sqrt(Exp_1_Data_Pip$No_Replicates)
 head(Exp_1_Data_Pip)
 
 Exp_1_Data_Host_Type <-data_summary(Fed_only, varname = "No_eggs_per_fem", groupnames = c("Strain", "Host_Type"))
-Exp_1_Data_Host_Type$se <- Exp_1_Data_Host_Type$sd / sqrt(Exp_1_Data_Host_Type$N)
+Exp_1_Data_Host_Type$se <- Exp_1_Data_Host_Type$sd / sqrt(Exp_1_Data_Host_Type$No_Replicates)
 head(Exp_1_Data_Host_Type)
-Exp_1_Data_Host_Type_Avian <-subset(Exp_1_Data_Host_Type, Host_Type =="avian")
 # Packages Required -------------------------------------------------------
 #activating packages required
 library (lme4)
@@ -258,23 +248,11 @@ qqline(resid(model_Full1))
 plot(model_Full1)
 
 # Statistical Analyses ----------------------------------------------------
-host_effects_anova_1 <- aov(No_eggs_per_fem ~ Strain*Host_Type, data = Exp_1_Data_Host_Type)
+host_effects_anova_1 <- aov(No_eggs_per_fem ~ Host_Type*Strain, data = Exp_1_Data_Host_Type)
 summary(host_effects_anova_1)
 host_effects_anova_2 <- aov(No_eggs_per_fem ~ Strain + Host_Type, data = Exp_1_Data_Host_Type)
 summary(host_effects_anova_2)
 TukeyHSD(host_effects_anova_2, which = "Strain")
-
-#just considering molestus here; not that useful because Fed_only already has this data and the model is still saturated
-molestus_anova_1 <- aov(No_eggs_per_fem ~ Strain + Treatment + Strain:Treatment, data = Exp_1_Data_Molestus)
-summary(molestus_anova_1)
-molestus_anova_2 <-aov(No_eggs_per_fem ~ Strain + Treatment, data = Exp_1_Data_Molestus)
-summary(molestus_anova_2)
-molestus_anova_1_mixed <- lmer(No_eggs_per_fem~1 + Strain*Treatment + (1|Replicate), data = Fed_only_molestus)
-summary(molestus_anova_1_mixed)
-molestus_anova_2_mixed <- lmer(No_eggs_per_fem~1 + Strain+Treatment + (1|Replicate), data = Fed_only_molestus)
-summary(molestus_anova_1_mixed)
-AIC(molestus_anova_1_mixed, molestus_anova_2_mixed)
-anova(molestus_anova_1_mixed) #saturated model again; no p-value
 
 #ANOVA for each of the single treatments? Yeah
 Bovine_Anova <- aov(No_eggs_per_fem ~ Strain, data = Fed_only_bovine)
@@ -318,5 +296,3 @@ t.test(No_eggs_per_fem~Strain, data = Fed_only_pip_equine)
 t.test(No_eggs_per_fem~Strain, data = Fed_only_pip_goose)
 t.test(No_eggs_per_fem~Strain, data = Fed_only_pip_rabbit)
 t.test(No_eggs_per_fem~Strain, data = Fed_only_pip_turkey)
-
-
