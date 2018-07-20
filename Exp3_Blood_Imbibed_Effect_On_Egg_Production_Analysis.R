@@ -7,6 +7,9 @@
 
 # Notes -------------------------------------------------------------------
 #07/06/2018: noticed an outlier for blood imbibed on Evanston (5 mg!), removed it. Suspected human error.
+#07/20/2018: new model is now model_Full4_LogNorm which fits a log normal distribution to our data. Is the intercept what we are considering for significance? If so, interaction, strain, and blood type are all important.
+#07/20/2018: started dealing data without the outlier. Note that the outlier made a significant difference. Also, evidence point that the balance was acting funny on the same replicate, where I got a negative number for blood imbibed.
+#07/20/2018: looking at qqplot, model_reduced3 looks better than model_Full4_LogNorm
 # Set Up and Working Directories and Libraries-----------------------------------------
 
 Exp_3_Data <- read.csv(file="~/Desktop/Mervin-Culex_Fitness_By_Blood/data/Exp3_CSV_Blood_Meal_Weight_Data.csv", header = T)
@@ -120,15 +123,19 @@ print(p2)
 # Main Experiment Boxplot -------------------------------------------------
 
 #this is used for figure 15
+tiff('fig_15_box.tiff', units="in", width=8, height=5, res=300)
 box <- ggplot(With_eggs, aes(x=Strain, y= Blood_Imbibed, fill = Blood_Type))+ stat_boxplot(geom = "errorbar")+
-  theme_classic()+ labs(title = "Average Blood Imbibed per Treatment", x = "Strain",
+  theme_classic()+ labs(x = "Strain",
   y = "Average Blood Imbibed (mg)", fill = "Blood Type") + scale_fill_manual(values=c('#d61a46','#98ca32'))#set notch to F since notches went outside hinges.
 box +geom_boxplot()
+dev.off()
 
 #this is used for figure 16
-box_2 <-ggplot(With_eggs, aes(x=Strain, y= Eggs_Produced, fill = Blood_Type)) +  theme_classic()+ labs(title = "Average Number of Eggs per Treatment", x = "Strain", y = "Average Egg Count", fill = "Blood Type") + 
+tiff('fig_16_box.tiff', units="in", width=8, height=5, res=300)
+box_2 <-ggplot(With_eggs, aes(x=Strain, y= Eggs_Produced, fill = Blood_Type)) + stat_boxplot(geom = "errorbar")+ theme_classic()+ labs(x = "Strain", y = "Average Egg Count", fill = "Blood Type") + 
   scale_fill_manual(values = c('#fc600a','#1489b8'))#set notch to F since notches went outside hinges.
 box_2+geom_boxplot()
+dev.off()
 # Experiment Boxplot with Jitter ------------------------------------------
 box_n_jitter <- ggplot(Exp_3_Data, aes(x= Strain, y= Blood_Imbibed, color = Blood_Type)) + geom_boxplot() + geom_jitter(position = position_jitter(0.1))+
   theme_classic()+scale_fill_manual(values=c('#999999','#f2f3f4'))+ labs(title = "Amount of Blood Imbibed per Blood Type per Strain", x = "Strain", y = "Blood Imbibed", color = "Blood Type")
@@ -147,17 +154,19 @@ print(imbibed_vs_eggs_scatter)
 
 imbibed_vs_eggs_scatter_CAL1_main <- ggplot(CAL1_With_eggs, aes(x=Blood_Imbibed, y=Eggs_Produced, color = Blood_Type, shape = Blood_Type)) + geom_point() +
   geom_smooth(method = lm, fullrange = TRUE, se=FALSE) +
-  labs(title = "Egg Production versus Blood Imbibed for CAL 1", x="Blood Imbibed (mg)", y = "Eggs Produced", color = "Blood_Type")+
+  labs( x="Blood Imbibed (mg)", y = "Eggs Produced", color = "Blood_Type")+
   theme_classic()+ scale_color_manual(values=c('#cbe432','#2e2fe3'))
 print(imbibed_vs_eggs_scatter_CAL1_main) #this is used for figure 17 or 18.
 
 imbibed_vs_eggs_scatter_Evanston_main <- ggplot(Evanston_With_eggs, aes(x=Blood_Imbibed, y=Eggs_Produced, color = Blood_Type, shape = Blood_Type)) + geom_point() +
   geom_smooth(method = lm, fullrange = TRUE, se=FALSE) +
-  labs(title = "Egg Production versus Blood Imbibed for Evanston", x="Blood Imbibed (mg)", y = "Eggs Produced", color = "Blood_Type")+
+  labs( x="Blood Imbibed (mg)", y = "Eggs Produced", color = "Blood_Type")+
   theme_classic()+scale_color_manual(values=c('#fcba12','#343009'))
 print(imbibed_vs_eggs_scatter_Evanston_main) #this is used for figure 19 or 20.
 
+tiff('fig_17.tiff', units="in", width=8, height=5, res=300)
 multiplot(imbibed_vs_eggs_scatter_CAL1_main, imbibed_vs_eggs_scatter_Evanston_main)
+dev.off() #used for figure 17
 
 imbibed_vs_eggs_scatter_CAL1_bovine <-ggplot(CAL_1_Bovine, aes(x=Blood_Imbibed, y=Eggs_Produced)) + geom_point() +
   geom_smooth(method = lm, se = FALSE, fullrange = TRUE, level = 0.95, color = "grey") +
@@ -283,34 +292,65 @@ hist( CAL_1_Goose$Blood_Imbibed, main = "CAL 1 Imbibed Goose Blood Distribution"
 hist( Evanston_Bovine$Blood_Imbibed, main = "Evanston Imbibed Bovine Blood Distribution", xlab = "Amount Imbibed (mg)", breaks = seq(0,5.5, by =0.5), ylim = c(0,20))
 hist( Evanston_Goose_Removed_Outlier$Blood_Imbibed, main = "Evanston Imbibed Goose Blood Distribution", xlab = "Amount Imbibed (mg)", breaks = seq(0,5.5, by =0.5), ylim = c(0,20))
 # Full Models -------------------------------------------------------------
-model_full1 <- lmer(Blood_Imbibed ~ 1 + Strain*Blood_Type + Initial_Weight + (1|Replicate), data = Exp_3_Data)
+model_Full1_Gau <- lmer(Blood_Imbibed ~ 1 + Strain*Blood_Type + (1|Replicate), data = Exp_3_Data_Outlier_Removed)
+summary(model_Full1_Gau)
+
+model_Full1_TransGau <- lmer(Blood_Imbibed ~ 1 + Strain*Blood_Type + (1|Replicate), data = Exp_3_Data_Outlier_Removed)
+summary(model_Full1_TransGau)
+
+model_Full1_Gam <- glmer(Blood_Imbibed ~ 1 + Strain*Blood_Type + (1|Replicate), data = Exp_3_Data_Outlier_Removed, family = Gamma)
+summary(model_Full1_Gam)
+
+model_Full1_LogNorm <- glmer(Blood_Imbibed ~ 1 + Strain*Blood_Type + (1|Replicate), data = Exp_3_Data_Outlier_Removed, family = gaussian(link = "log"))
+summary(model_Full1_LogNorm)
+
+model_Full2_LogNorm <- lmer(log(Blood_Imbibed) ~ 1 + Strain*Blood_Type + (1|Replicate), data = Exp_3_Data_Outlier_Removed)
+summary(model_Full2_LogNorm)
+plot(model_Full2_LogNorm)
+qqnorm(resid(model_Full2_LogNorm))
+qqline(resid(model_Full2_LogNorm))
+model_Full3_LogNorm <- lmer(log(Blood_Imbibed) ~ 1 + Initial_Weight*Blood_Type + (1|Replicate), data = Exp_3_Data_Outlier_Removed)
+summary(model_Full3_LogNorm)
+
+model_Full4_LogNorm <- glm(log(Blood_Imbibed) ~ 1 + Strain*Blood_Type + (1|Replicate), data = Exp_3_Data_Outlier_Removed)
+summary(model_Full4_LogNorm)
+
+AIC(model_Full1_Gam, model_Full1_TransGau, model_Full1_LogNorm, model_Full2_LogNorm, model_Full3_LogNorm, model_Full4_LogNorm)
+BIC(model_Full1_Gam, model_Full1_TransGau, model_Full1_LogNorm, model_Full2_LogNorm, model_Full3_LogNorm, model_Full4_LogNorm)
+BIC(model_Full1_Gam, model_Full1_TransGau)
+plot(model_Full4_LogNorm)
+
+model_full1 <- lmer(Blood_Imbibed ~ 1 + Strain*Blood_Type + Initial_Weight + (1|Replicate), data = Exp_3_Data_Outlier_Removed)
 summary(model_full1)
 
-model_full2 <- lmer(Blood_Imbibed ~ 1 + Strain*Blood_Type + (1|Replicate), data = Exp_3_Data)
+model_full2 <- lmer(Blood_Imbibed ~ 1 + Strain*Blood_Type + (1|Replicate), data = Exp_3_Data_Outlier_Removed)
 summary(model_full2)
 anova(model_full2)
+qqnorm(model_full2)
 
-model_full3 <- lmer(Blood_Imbibed ~ 1 +Strain*Initial_Weight + (1|Replicate), data = Exp_3_Data)
+model_full3 <- lmer(Blood_Imbibed ~ 1 +Strain*Initial_Weight + (1|Replicate), data = Exp_3_Data_Outlier_Removed)
 summary(model_full3)
 
-model_full4 <- lmer (Blood_Imbibed ~ 1 + Initial_Weight*Blood_Type + (1|Replicate), data = Exp_3_Data)
+model_full4 <- lmer (Blood_Imbibed ~ 1 + Initial_Weight*Blood_Type + (1|Replicate), data = Exp_3_Data_Outlier_Removed)
 summary(model_full4)
 
-AIC(model_full1, model_full2, model_full3, model_full4) #model_full2 best fit 
-BIC(model_full1, model_full2, model_full3, model_full4) #again model_full2 best fit
+AIC(model_full1, model_full2, model_full3, model_full4, model_Full4_LogNorm) #model_full2; UPDATE: model_Full4_LogNorm is the best
+BIC(model_full1, model_full2, model_full3, model_full4, model_Full4_LogNorm) #again model_full2 best fit; model_FUll4_LogNorm is the best
 # Model Reductions --------------------------------------------------------
-model_reduced1 <- lmer(Blood_Imbibed ~ 1 + Blood_Type + Strain + (1|Replicate), data = Exp_3_Data)
+model_reduced1 <- glm(log(Blood_Imbibed) ~ 1 + Strain + Blood_Type + (1|Replicate), data = Exp_3_Data)
 summary(model_reduced1)
-anova(model_full2, model_reduced1, test = "Chisq") #eliminate interaction term; important
+anova(model_Full4_LogNorm, model_reduced1, test = "Chisq") #eliminate interaction term; interaction term is important
 
-model_reduced2 <- lmer(Blood_Imbibed ~ 1 +Strain + (1|Replicate), data = Exp_3_Data)
+model_reduced2 <- glm(log(Blood_Imbibed) ~ 1 + Strain + (1|Replicate), data = Exp_3_Data)
 summary(model_reduced2)
-anova(model_full2, model_reduced2, test = "Chisq") #Blood_Type is important
+anova(model_Full4_LogNorm, model_reduced2, test = "Chisq") #Blood_Type is important
 
-model_reduced3 <- lmer(Blood_Imbibed ~ 1 + Blood_Type + (1|Replicate), data = Exp_3_Data)
+model_reduced3 <- glm(log(Blood_Imbibed) ~ 1 + Blood_Type + (1|Replicate), data = Exp_3_Data)
 summary(model_reduced3)
-anova(model_full2, model_reduced3, test = "Chisq") #Strain is important
-#best model is still model_Full2
+anova(model_Full4_LogNorm, model_reduced3, test = "Chisq") #Strain is important
+
+plot(model_reduced3)
+#new model is still model_Full4_LogNorm
 
 # Correlation Tests -------------------------------------------------------
 

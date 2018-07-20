@@ -9,6 +9,10 @@ head(Exp_1_data)
 Exp_1_data$No_eggs_per_fem <- Exp_1_data$Total_Egg_Produced/Exp_1_data$No_Fed
 Fed_only <- subset(Exp_1_data, No_Fed > 0)
 
+Fed_only$Trans_No_eggs_per_fem <- Fed_only$No_eggs_per_fem + 0.00001 #adding a small number to response so that gamma model works.
+#First comparing model of normal responses with transformed response (above) using lmer to make sure that 
+#transformation doesn't impact model estimates much.
+
 str(Fed_only)
 Fed_only_mammalian <- subset(Fed_only, Host_Type =="mammalian")
 Fed_only_avian <- subset(Fed_only, Host_Type == "avian")
@@ -165,14 +169,16 @@ whole_data_box <- ggplot(Fed_only) + geom_boxplot(aes(x=Strain, y= No_eggs_per_f
   theme_classic()+ labs(title="Effect of Blood Type on Eggs Produced", x="Strain", y = "Average Eggs", fill = "Treatment") #set notch to F since notches went outside hinges.
 print(whole_data_box)
 
-whole_data_bar <-ggplot(Exp_1_Data_2, aes(x=Strain, y=No_eggs_per_fem, fill=Treatment)) + 
-  geom_bar(stat="identity", color="black", 
-           position=position_dodge()) +
+tiff('fig_10_bar.tiff', units="in", height = 5, width = 8, res=300)
+whole_data_bar <-ggplot(Exp_1_Data_Summary, aes(x=Strain, y=No_eggs_per_fem, fill=Treatment)) + 
+  geom_bar(stat="identity", color="black", position=position_dodge()) +
   geom_errorbar(aes(ymin=No_eggs_per_fem-se, ymax=No_eggs_per_fem+se), width=.2,
                 position=position_dodge(.9)) + labs(x="Strain", y = "Average Eggs", fill = "Treatment")+
   theme_classic()+ scale_color_brewer(palette = "Spectral")+theme(text=element_text(family="Calibri"))
 print(whole_data_bar)#used for fig. 10
+dev.off()
 
+tiff('fig_9_bar.tiff', units="in", width=8, height=5, res=300)
 Host_Type_bar <-ggplot(Exp_1_Data_Host_Type, aes(x=Strain, y=No_eggs_per_fem, fill=Host_Type)) + 
   geom_bar(stat="identity", color="black", 
            position=position_dodge()) +
@@ -180,6 +186,7 @@ Host_Type_bar <-ggplot(Exp_1_Data_Host_Type, aes(x=Strain, y=No_eggs_per_fem, fi
                 position=position_dodge(.9)) + labs(x="Strain", y = "Average Eggs", fill = "Host Type")+
   theme_classic()+ scale_color_brewer(palette = "Spectral")+theme(text=element_text(family="Calibri"))
 print(Host_Type_bar) #used for fig. 9
+dev.off()
 
 Host_Type_bar_with_CI <-ggplot(Exp_1_Data_Host_Type, aes(x=Strain, y=No_eggs_per_fem, fill=Host_Type)) + 
   geom_bar(stat="identity", color="black", 
@@ -208,6 +215,33 @@ bartlett.test(No_eggs_per_fem~Treatment, data = Fed_only ) #variances per treatm
 
 # Model Fitting and Reductions --------------------------------------------
 #Exploring Full Models To Fit Data
+
+model_Full1_Gau <- lmer(No_eggs_per_fem ~ 1 + Strain*Treatment + (1|Replicate), data = Fed_only)
+summary(model_Full1_Gau)
+
+model_Full1_TransGau <- lmer(Trans_No_eggs_per_fem ~ 1 + Strain*Treatment + (1|Replicate), data = Fed_only)
+summary(model_Full1_TransGau)
+
+model_Full1_Gam <- glmer(Trans_No_eggs_per_fem ~ 1 + Strain*Treatment + (1|Replicate), data = Fed_only, family = Gamma)
+summary(model_Full1_Gam)
+
+model_Full1_LogNorm <- glmer(Trans_No_eggs_per_fem ~ 1 + Strain*Treatment + (1|Replicate), data = Fed_only, family = gaussian(link = "log"))
+summary(model_Full1_LogNorm)
+
+model_Full2_LogNorm <- lmer(log(Trans_No_eggs_per_fem) ~ 1 + Strain*Treatment + (1|Replicate), data = Fed_only)
+summary(model_Full2_LogNorm)
+
+model_Full3_LogNorm <- lmer(log(Trans_No_eggs_per_fem) ~ 1 + Form*Treatment + (1|Replicate), data = Fed_only)
+summary(model_Full3_LogNorm)
+
+model_Full4_LogNorm <- glm(log(Trans_No_eggs_per_fem) ~ 1 + Strain*Treatment + (1|Replicate), data = Fed_only)
+summary(model_Full4_LogNorm)
+
+AIC(model_Full1_Gam, model_Full1_TransGau, model_Full1_LogNorm, model_Full2_LogNorm, model_Full3_LogNorm, model_Full4_LogNorm)
+#model_Full2_LogNorm is the best model
+BIC(model_Full1_Gam, model_Full1_TransGau)
+
+#regular mixed-effects linear regression models
 model_Full1 <- lmer(No_eggs_per_fem ~ 1 + Strain*Treatment + (1|Replicate), data = Fed_only)
 summary(model_Full1)
 
@@ -224,35 +258,37 @@ Fed_only_pois <- Fed_only %>% mutate(No_eggs_per_fem = round(No_eggs_per_fem, 0)
 model_Full5 <- glmer(No_eggs_per_fem ~ 1 + Strain*Treatment + (1|Replicate), data = Fed_only_pois, family = "poisson")
 summary(model_Full5)
 
-AIC(model_Full1, model_Full2, model_Full3, model_Full4, model_Full5) #model_Full1 is best fit
-BIC(model_Full1, model_Full2, model_Full3, model_Full4, model_Full5) #again with model_Full1
+AIC(model_Full1, model_Full2, model_Full3, model_Full4, model_Full5, model_Full2_LogNorm) #model_Full1 is best fit
+BIC(model_Full1, model_Full2, model_Full3, model_Full4, model_Full5, model_Full2_LogNorm) #again with model_Full1
+#model_FUll2_LogNorm is the best
 
-#model_Full1 reduction
-model_reduced1 <- lmer(No_eggs_per_fem ~ 1 + Strain + Treatment + (1|Replicate), data = Fed_only)
+#model_Full2_LogNorm reduction
+model_reduced1 <- lmer(log(Trans_No_eggs_per_fem) ~ 1 + Strain+Treatment + (1|Replicate), data = Fed_only)
 summary(model_reduced1)
-anova(model_Full1, model_reduced1, test = "Chisq") #interaction is important
+anova(model_Full2_LogNorm, model_reduced1, test = "Chisq") #interaction is important
 
-model_reduced2 <- lmer(No_eggs_per_fem ~ 1 + Strain + (1|Replicate), data = Fed_only)
+model_reduced2 <- lmer(log(Trans_No_eggs_per_fem) ~ 1 + Strain + (1|Replicate), data = Fed_only)
 summary(model_reduced2)
-anova(model_reduced1, model_reduced2, test = "Chisq") #including treatment is important
-# *** ANOVA
-model_reduced3 <- lmer(No_eggs_per_fem ~ 1 + Treatment + (1|Replicate), data = Fed_only)
+anova(model_Full2_LogNorm, model_reduced2, test = "Chisq") #including treatment is important
+
+model_reduced3 <- lmer(log(Trans_No_eggs_per_fem) ~ 1 +Treatment + (1|Replicate), data = Fed_only)
 summary(model_reduced3)
-anova(model_reduced1, model_reduced3, test = "Chisq") #strain is important
+anova(model_Full2_LogNorm, model_reduced3, test = "Chisq") #strain is important
 
-#So full model is still model_Full1; albeit a saturated model.
-anova(model_Full1)
-summary(model_Full1)
-qqnorm(resid(model_Full1))
-qqline(resid(model_Full1))
-plot(model_Full1)
-
+#So full model is still model_Full2_LogNorm; albeit a saturated model.
+anova(model_Full2_LogNorm)
+summary(model_Full2_LogNorm)
+qqnorm(resid(model_Full2_LogNorm))
+qqline(resid(model_Full2_LogNorm))
+plot(model_Full2_LogNorm)
+#the qqplot of the residuals of model_Full2_LogNorm does not fit the qqpline well, but AIC, BIC is good????
 # Statistical Analyses ----------------------------------------------------
 host_effects_anova_1 <- aov(No_eggs_per_fem ~ Host_Type*Strain, data = Exp_1_Data_Host_Type)
 summary(host_effects_anova_1)
-host_effects_anova_2 <- aov(No_eggs_per_fem ~ Strain + Host_Type, data = Exp_1_Data_Host_Type)
+
+host_effects_anova_2 <- aov(No_eggs_per_fem ~ Strain*Treatment, data = Fed_only)
 summary(host_effects_anova_2)
-TukeyHSD(host_effects_anova_2, which = "Strain")
+TukeyHSD(host_effects_anova_2)
 
 #ANOVA for each of the single treatments? Yeah
 Bovine_Anova <- aov(No_eggs_per_fem ~ Strain, data = Fed_only_bovine)
