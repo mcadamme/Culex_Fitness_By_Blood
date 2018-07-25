@@ -5,10 +5,10 @@
 
 # Setting Up Data Sets ----------------------------------------------------
 #mervin use this
-#Exp_1_data <- read.csv(file = "~/Desktop/Mervin-Culex_Fitness_By_Blood/data/Exp1_Host_Blood_Fitness_Study_Replicates.csv",header = T)
+Exp_1_data <- read.csv(file = "~/Desktop/Mervin-Culex_Fitness_By_Blood/data/Exp1_Host_Blood_Fitness_Study_Replicates.csv",header = T)
 #head(Exp_1_data)
 #megan use this
-Exp_1_data <- read.csv(file = "~/Desktop/Culex_Fitness_By_Blood/data/Exp1_Host_Blood_Fitness_Study_Replicates.csv",header = T)
+#Exp_1_data <- read.csv(file = "~/Desktop/Culex_Fitness_By_Blood/data/Exp1_Host_Blood_Fitness_Study_Replicates.csv",header = T)
 head(Exp_1_data)
 Exp_1_data$No_eggs_per_fem <- Exp_1_data$Total_Egg_Produced/Exp_1_data$No_Fed
 Fed_only <- subset(Exp_1_data, No_Fed > 0)
@@ -236,7 +236,7 @@ AIC(model_Full1, model_Full2, model_Full3, model_Full4) #model_Full1 is best fit
 BIC(model_Full1, model_Full2, model_Full3, model_Full4) #again with model_Full1
 
 
-#Exploring full model 1 with other distributions because our data look slightly non-normally distributed.
+#Exploring model_Full1 with other distributions because our data look slightly non-normally distributed.
 model_Full1_TransGau <- lmer(Trans_No_eggs_per_fem ~ 1 + Strain*Treatment + (1|Replicate), data = Fed_only)
 summary(model_Full1_TransGau)
 
@@ -262,12 +262,26 @@ BIC(model_Full4_pois, model_Full1_Gam, model_Full1_TransGau, model_Full1, model_
 #model_Full2_LogNorm is the best model according to both AIC and BIC, but checking qq plots against model_Full1
 
 qqnorm(resid(model_Full1))
+qqPlot(resid(model_Full1))
 qqnorm(resid(model_Full2_LogNorm))
+qqPlot(resid(model_Full2_LogNorm))
+qqPlot(resid(model_Full2_LogNorm), distribution = "lnorm")
 
 #qqnorm plot looks weird for model_Full2_LogNorm.  Will proceed by looking at whether using
 #model_Full1 or model_Full2_LogNorm changes the outcome of our analysis.
 
-#model_Full1 reduction - Mervin do this.
+#model_Full1 reduction
+model_reduced1 <- lmer(No_eggs_per_fem ~ 1 + Strain+Treatment + (1|Replicate), data = Fed_only)
+summary(model_reduced1)
+anova(model_Full1, model_reduced1, test = "Chisq") #interaction is important
+
+model_reduced2 <- lmer(No_eggs_per_fem ~ 1 + Strain + (1|Replicate), data = Fed_only)
+summary(model_reduced2)
+anova(model_Full1, model_reduced2, test = "Chisq") #including treatment is important
+
+model_reduced3 <- lmer(No_eggs_per_fem ~ 1 +Treatment + (1|Replicate), data = Fed_only)
+summary(model_reduced3)
+anova(model_Full1, model_reduced3, test = "Chisq") #strain is important
 
 #model_Full2_LogNorm reduction
 model_reduced1 <- lmer(log(Trans_No_eggs_per_fem) ~ 1 + Strain+Treatment + (1|Replicate), data = Fed_only)
@@ -282,22 +296,17 @@ model_reduced3 <- lmer(log(Trans_No_eggs_per_fem) ~ 1 +Treatment + (1|Replicate)
 summary(model_reduced3)
 anova(model_Full2_LogNorm, model_reduced3, test = "Chisq") #strain is important
 
-#So full model is still model_Full2_LogNorm; albeit a saturated model.
-anova(model_Full2_LogNorm)
-summary(model_Full2_LogNorm)
-qqnorm(resid(model_Full2_LogNorm))
-qqline(resid(model_Full2_LogNorm))
-plot(model_Full2_LogNorm)
-#the qqplot of the residuals of model_Full2_LogNorm does not fit the qqpline well, but AIC, BIC is good????
-# Statistical Analyses ----------------------------------------------------
-host_effects_anova_1 <- aov(No_eggs_per_fem ~ Host_Type*Strain, data = Exp_1_Data_Host_Type)
-summary(host_effects_anova_1)
+#model reductions for model_Full2_LogNorm are similar to model_Full1 in anova results
+#model_Full2_LogNorm anova gave errors, while model_Full1 did not.
+#will proceed to analyze data using model_Full1, since analysis are the same and
+#the qqplot looks more normally distributed
 
-host_effects_anova_2 <- aov(No_eggs_per_fem ~ Strain*Treatment, data = Fed_only)
+# Statistical Analyses ----------------------------------------------------
+host_effects_anova_2 <- aov(No_eggs_per_fem ~ Host_Type*Strain, data = Fed_only)
 summary(host_effects_anova_2)
 TukeyHSD(host_effects_anova_2)
 
-#ANOVA for each of the single treatments? Yeah
+#ANOVA for each of the single treatments
 Bovine_Anova <- aov(No_eggs_per_fem ~ Strain, data = Fed_only_bovine)
 summary(Bovine_Anova)
 TukeyHSD(Bovine_Anova)
@@ -325,7 +334,7 @@ Host_Anova <- aov(No_eggs_per_fem ~ Host_Type*Strain, data = Fed_only)
 summary(Host_Anova)
 TukeyHSD(Host_Anova) #used for fig. 9
 
-#Then T-Test within each bioforms? Yeap 
+#T-Test within each bioforms
 t.test(No_eggs_per_fem~Strain, data = Fed_only_mol_bovine)
 t.test(No_eggs_per_fem~Strain, data = Fed_only_mol_chicken)
 t.test(No_eggs_per_fem~Strain, data = Fed_only_mol_equine)

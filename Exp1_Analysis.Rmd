@@ -8,7 +8,7 @@ output: github_document
 
 
 ####Background####
-The *Culex pipiens* species is part of the Culex assemblage. Within the species itself, there exists two major bioforms: form pipiens and form molestus. *Cx. pip* form pipiens are aboveground mosquitoes that feed primarily in avian blood, while the *Cx. pip* form molestus are underground mosquitoes that feed primarily in mammalian blood. Though host preference has been previously demostrated, the reason as to why these preferences exist is unknown. The purpose of this work is to analyze the effects of different mammalian and avian host blood on the fecundity of above ground and below ground *Cx. pipiens* mosquitoes to see whether mosquitoes produce the most eggs when feeding on their preferred hosts.
+The *Culex pipiens* species is part of the Culex assemblage. Within the species itself, there exists two major bioforms: form pipiens and form molestus. *Cx. pip* form *pipiens* are aboveground mosquitoes that feed primarily in avian blood, while the *Cx. pip* form *molestus* are underground mosquitoes that feed primarily in mammalian blood. Though host preference has been previously demostrated, the reason as to why these preferences exist is unknown. The purpose of this work is to analyze the effects of different mammalian and avian host blood on the fecundity of above ground and below ground *Cx. pipiens* mosquitoes to see whether mosquitoes produce the most eggs when feeding on their preferred hosts.
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
@@ -44,9 +44,9 @@ boot.fn <- function(x, N=5000) {
 #####Setting up the main dataset
 ```{r, results = "hide"}
 #Mervin uses this
-#Exp_1_data <- read.csv(file = "~/Desktop/Mervin-Culex_Fitness_By_Blood/data/Exp1_Host_Blood_Fitness_Study_Replicates.csv",header = T)
+Exp_1_data <- read.csv(file = "~/Desktop/Mervin-Culex_Fitness_By_Blood/data/Exp1_Host_Blood_Fitness_Study_Replicates.csv",header = T)
 #Megan uses this
-Exp_1_data <- read.csv(file = "~/Desktop/Culex_Fitness_By_Blood/data/Exp1_Host_Blood_Fitness_Study_Replicates.csv",header = T)
+#Exp_1_data <- read.csv(file = "~/Desktop/Culex_Fitness_By_Blood/data/Exp1_Host_Blood_Fitness_Study_Replicates.csv",header = T)
 head(Exp_1_data)
 Exp_1_data$No_eggs_per_fem <- Exp_1_data$Total_Egg_Produced/Exp_1_data$No_Fed
 Fed_only <- subset(Exp_1_data, No_Fed > 0)
@@ -100,7 +100,8 @@ head(Exp_1_Data_Host_Type)
 ####Graphs of the Data
 
 #####Average egg production when looking at host type alone
-Looking at host type alone, all strains seem to do well when fed avian blood. Error bars represent standard errors (alpha = 0.05)
+Looking at host type alone, all strains seem to do well when fed avian blood. Error bars represent standard error (alpha = 0.05)
+
 ```{r, echo = FALSE}
 Host_Type_bar <-ggplot(Exp_1_Data_Host_Type, aes(x=Strain, y=No_eggs_per_fem, fill=Host_Type)) + 
   geom_bar(stat="identity", color="black", 
@@ -112,7 +113,8 @@ print(Host_Type_bar)
 ```
 
 #####Average egg production per treatment
-The graph below summarizes the average egg production for all treatments. Error bars represent standard error (alpha = 0.05)
+The graph below summarizes the average egg production for all treatments. Error bars represent standard error(alpha = 0.05)
+
 ```{r, echo = FALSE}
 whole_data_bar <-ggplot(Exp_1_Data_Summary, aes(x=Strain, y=No_eggs_per_fem, fill=Treatment)) + 
   geom_bar(stat="identity", color="black", 
@@ -124,7 +126,7 @@ print(whole_data_bar)
 ```
 
 ####Linear Model With Mixed Effects for the Data
-The linear mixed effects model attempts to explain egg production with respect to strain and treatment, including their interaction and the random effect caused by performing the experiment in replicates over a wide span of time. 
+The linear mixed effects model attempts to explain egg production with respect to strain and treatment, including their interaction and the random effect caused by performing the experiment in replicates over a wide span of time. From our exploratory data, we found that this model in particular was the best considering the AIC and BIC comparisons as well as qqplots. Please see "Exp_1_Exploratory_Data.R" for the additional models tested against this model.
 ```{r, error = FALSE, results = "hide"}
 model_Full1 <- lmer(No_eggs_per_fem ~ 1 + Strain*Treatment + (1|Replicate), data = Fed_only)
 summary(model_Full1)
@@ -159,4 +161,4 @@ t.test(No_eggs_per_fem~Strain, data = Fed_only_pip_turkey)
 ```
 
 ####Conclusion
-Across strains, both forms seem to produce the most eggs when feed avian blood.  
+Across strains, both forms seem to produce the most eggs when feed avian blood.
