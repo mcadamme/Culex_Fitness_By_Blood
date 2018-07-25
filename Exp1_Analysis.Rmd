@@ -1,5 +1,5 @@
 ---
-title: "Host Blood Effects on the Fecundity of Aboveground and Belowground Cx. pipiens Mosquitoes"
+title: "*Culex pipiens* egg production depends upon vertebrate blood host species"
 author: "Cuadera, M.K, and Fritz, M. L."
 date: "7/6/2018"
 output: html_document
@@ -43,7 +43,10 @@ boot.fn <- function(x, N=5000) {
 
 #####Setting up the main dataset
 ```{r, results = "hide"}
-Exp_1_data <- read.csv(file = "~/Desktop/Mervin-Culex_Fitness_By_Blood/data/Exp1_Host_Blood_Fitness_Study_Replicates.csv",header = T)
+#Mervin uses this
+#Exp_1_data <- read.csv(file = "~/Desktop/Mervin-Culex_Fitness_By_Blood/data/Exp1_Host_Blood_Fitness_Study_Replicates.csv",header = T)
+#Megan uses this
+Exp_1_data <- read.csv(file = "~/Desktop/Culex_Fitness_By_Blood/data/Exp1_Host_Blood_Fitness_Study_Replicates.csv",header = T)
 head(Exp_1_data)
 Exp_1_data$No_eggs_per_fem <- Exp_1_data$Total_Egg_Produced/Exp_1_data$No_Fed
 Fed_only <- subset(Exp_1_data, No_Fed > 0)
@@ -70,11 +73,11 @@ Fed_only_pip_turkey <- subset(Fed_only_pip, Treatment =="Turkey")
 ```
 
 #####Setting up the libraries needed
-```{r, error = FALSE}
+```{r echo=T, error = FALSE, results='hide'}
 library (lme4)
 library(ggplot2)
 library(car)
-library(dplyr)
+library(plyr)
 ```
 
 #####Table summary of the data

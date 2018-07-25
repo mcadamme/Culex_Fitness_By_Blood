@@ -4,7 +4,11 @@
 #Date: July 06, 2018
 
 # Setting Up Data Sets ----------------------------------------------------
-Exp_1_data <- read.csv(file = "~/Desktop/Mervin-Culex_Fitness_By_Blood/data/Exp1_Host_Blood_Fitness_Study_Replicates.csv",header = T)
+#mervin use this
+#Exp_1_data <- read.csv(file = "~/Desktop/Mervin-Culex_Fitness_By_Blood/data/Exp1_Host_Blood_Fitness_Study_Replicates.csv",header = T)
+#head(Exp_1_data)
+#megan use this
+Exp_1_data <- read.csv(file = "~/Desktop/Culex_Fitness_By_Blood/data/Exp1_Host_Blood_Fitness_Study_Replicates.csv",header = T)
 head(Exp_1_data)
 Exp_1_data$No_eggs_per_fem <- Exp_1_data$Total_Egg_Produced/Exp_1_data$No_Fed
 Fed_only <- subset(Exp_1_data, No_Fed > 0)
@@ -214,32 +218,6 @@ bartlett.test(No_eggs_per_fem~Treatment, data = Fed_only ) #variances per treatm
 
 
 # Model Fitting and Reductions --------------------------------------------
-#Exploring Full Models To Fit Data
-
-model_Full1_Gau <- lmer(No_eggs_per_fem ~ 1 + Strain*Treatment + (1|Replicate), data = Fed_only)
-summary(model_Full1_Gau)
-
-model_Full1_TransGau <- lmer(Trans_No_eggs_per_fem ~ 1 + Strain*Treatment + (1|Replicate), data = Fed_only)
-summary(model_Full1_TransGau)
-
-model_Full1_Gam <- glmer(Trans_No_eggs_per_fem ~ 1 + Strain*Treatment + (1|Replicate), data = Fed_only, family = Gamma)
-summary(model_Full1_Gam)
-
-model_Full1_LogNorm <- glmer(Trans_No_eggs_per_fem ~ 1 + Strain*Treatment + (1|Replicate), data = Fed_only, family = gaussian(link = "log"))
-summary(model_Full1_LogNorm)
-
-model_Full2_LogNorm <- lmer(log(Trans_No_eggs_per_fem) ~ 1 + Strain*Treatment + (1|Replicate), data = Fed_only)
-summary(model_Full2_LogNorm)
-
-model_Full3_LogNorm <- lmer(log(Trans_No_eggs_per_fem) ~ 1 + Form*Treatment + (1|Replicate), data = Fed_only)
-summary(model_Full3_LogNorm)
-
-model_Full4_LogNorm <- glm(log(Trans_No_eggs_per_fem) ~ 1 + Strain*Treatment + (1|Replicate), data = Fed_only)
-summary(model_Full4_LogNorm)
-
-AIC(model_Full1_Gam, model_Full1_TransGau, model_Full1_LogNorm, model_Full2_LogNorm, model_Full3_LogNorm, model_Full4_LogNorm)
-#model_Full2_LogNorm is the best model
-BIC(model_Full1_Gam, model_Full1_TransGau)
 
 #regular mixed-effects linear regression models
 model_Full1 <- lmer(No_eggs_per_fem ~ 1 + Strain*Treatment + (1|Replicate), data = Fed_only)
@@ -254,13 +232,42 @@ summary(model_Full3)
 model_Full4 <- lmer(No_eggs_per_fem ~ 1 + Strain*Host_Type + (1|Replicate), data = Fed_only)
 summary(model_Full4)
 
-Fed_only_pois <- Fed_only %>% mutate(No_eggs_per_fem = round(No_eggs_per_fem, 0))
-model_Full5 <- glmer(No_eggs_per_fem ~ 1 + Strain*Treatment + (1|Replicate), data = Fed_only_pois, family = "poisson")
-summary(model_Full5)
+AIC(model_Full1, model_Full2, model_Full3, model_Full4) #model_Full1 is best fit
+BIC(model_Full1, model_Full2, model_Full3, model_Full4) #again with model_Full1
 
-AIC(model_Full1, model_Full2, model_Full3, model_Full4, model_Full5, model_Full2_LogNorm) #model_Full1 is best fit
-BIC(model_Full1, model_Full2, model_Full3, model_Full4, model_Full5, model_Full2_LogNorm) #again with model_Full1
-#model_FUll2_LogNorm is the best
+
+#Exploring full model 1 with other distributions because our data look slightly non-normally distributed.
+model_Full1_TransGau <- lmer(Trans_No_eggs_per_fem ~ 1 + Strain*Treatment + (1|Replicate), data = Fed_only)
+summary(model_Full1_TransGau)
+
+model_Full1_Gam <- glmer(Trans_No_eggs_per_fem ~ 1 + Strain*Treatment + (1|Replicate), data = Fed_only, family = Gamma)
+summary(model_Full1_Gam)
+
+model_Full1_LogNorm <- glmer(Trans_No_eggs_per_fem ~ 1 + Strain*Treatment + (1|Replicate), data = Fed_only, family = gaussian(link = "log"))
+summary(model_Full1_LogNorm)
+
+model_Full2_LogNorm <- lmer(log(Trans_No_eggs_per_fem) ~ 1 + Strain*Treatment + (1|Replicate), data = Fed_only)
+summary(model_Full2_LogNorm)
+
+model_Full3_LogNorm <- glm(log(Trans_No_eggs_per_fem) ~ 1 + Strain*Treatment + (1|Replicate), data = Fed_only)
+summary(model_Full3_LogNorm)
+
+Fed_only_pois <- Fed_only %>% mutate(No_eggs_per_fem = round(No_eggs_per_fem, 0))
+model_Full4_pois <- glmer(No_eggs_per_fem ~ 1 + Strain*Treatment + (1|Replicate), data = Fed_only_pois, family = "poisson")
+summary(model_Full4_pois)
+
+AIC(model_Full4_pois, model_Full1_Gam, model_Full1_TransGau, model_Full1, model_Full1_LogNorm, model_Full2_LogNorm, model_Full3_LogNorm)
+BIC(model_Full4_pois, model_Full1_Gam, model_Full1_TransGau, model_Full1, model_Full1_LogNorm, model_Full2_LogNorm, model_Full3_LogNorm)
+
+#model_Full2_LogNorm is the best model according to both AIC and BIC, but checking qq plots against model_Full1
+
+qqnorm(resid(model_Full1))
+qqnorm(resid(model_Full2_LogNorm))
+
+#qqnorm plot looks weird for model_Full2_LogNorm.  Will proceed by looking at whether using
+#model_Full1 or model_Full2_LogNorm changes the outcome of our analysis.
+
+#model_Full1 reduction - Mervin do this.
 
 #model_Full2_LogNorm reduction
 model_reduced1 <- lmer(log(Trans_No_eggs_per_fem) ~ 1 + Strain+Treatment + (1|Replicate), data = Fed_only)
