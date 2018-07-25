@@ -2,7 +2,7 @@
 title: "*Culex pipiens* egg production depends upon vertebrate blood host species"
 author: "Cuadera, M.K, and Fritz, M. L."
 date: "7/6/2018"
-output: html_document
+output: github_document
 ---
 
 
