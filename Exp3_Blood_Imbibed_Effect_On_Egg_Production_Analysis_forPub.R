@@ -109,10 +109,10 @@ imbibed_vs_eggs_scatter <- ggplot(With_eggs, aes(x=Blood_Imbibed, y=Eggs_Produce
   geom_smooth(method = lm, fullrange = TRUE, se=FALSE) +
   labs(title = "Egg Production versus Blood Imbibed Overall", x="Blood Imbibed (mg)", y = "Eggs Produced", color = "Blood_Type")+
   theme_classic()
+
 print(imbibed_vs_eggs_scatter)
 
-
-
+#CAL1 - broken out by blood type
 imbibed_vs_eggs_scatter_CAL1_bovine <-ggplot(CAL_1_Bovine, aes(x=Blood_Imbibed, y=Eggs_Produced)) + geom_point() +
   geom_smooth(method = lm, se = FALSE, fullrange = TRUE, level = 0.95, color = "grey") +
   labs(title = "Egg Production versus Blood Imbibed for CAL1 Bovine", x="Blood Imbibed (mg)", y = "Eggs Produced")+
@@ -125,12 +125,7 @@ imbibed_vs_eggs_scatter_CAL1_goose <-ggplot(CAL_1_Goose, aes(x=Blood_Imbibed, y=
   theme_classic()
 print(imbibed_vs_eggs_scatter_CAL1_goose)
 
-imbibed_vs_eggs_scatter_Evanston_main <-ggplot(Evanston, aes(x=Blood_Imbibed, y=Eggs_Produced)) + geom_point() +
-  geom_smooth(method = lm, se = FALSE, fullrange = TRUE, level = 0.95, color = "grey") +
-  labs(title = "Egg Production versus Blood Imbibed for Evanston Overall", x="Blood Imbibed (mg)", y = "Eggs Produced")+
-  theme_classic()
-print(imbibed_vs_eggs_scatter_Evanston_main)
-
+#Evanston - broken out by blood type
 imbibed_vs_eggs_scatter_Evanston_bovine <-ggplot(Evanston_Bovine, aes(x=Blood_Imbibed, y=Eggs_Produced)) + geom_point() +
   geom_smooth(method = lm, se = FALSE, fullrange = TRUE, level = 0.95, color = "grey") +
   labs(title = "Egg Production versus Blood Imbibed for Evanston Bovine", x="Blood Imbibed (mg)", y = "Eggs Produced")+
@@ -144,54 +139,27 @@ imbibed_vs_eggs_scatter_Evanston_goose <-ggplot(Evanston_Goose, aes(x=Blood_Imbi
 print(imbibed_vs_eggs_scatter_Evanston_goose)
 
 #Initial Weight vs. Eggs Produced Scatterplots
-initial_vs_eggs_scatter <- ggplot(Exp_3_Data, aes(x=Initial_Weight, y=Eggs_Produced)) + geom_point() +
+initial_vs_eggs_scatter <- ggplot(With_eggs, aes(x=Initial_Weight, y=Eggs_Produced)) + geom_point() +
   geom_smooth(method = lm, se = FALSE, fullrange = TRUE, level = 0.95, color = "grey") +
   labs(title = "Egg Production versus Initial Weight Overall", x="Initial Weight (mg)", y = "Eggs Produced")+
   theme_classic()
+
 print(initial_vs_eggs_scatter)
 
+#Initial Weight vs. Eggs Scatterplots - broken down by strain.
 initial_vs_eggs_scatter_CAL1_main <-ggplot(CAL_1, aes(x=Initial_Weight, y=Eggs_Produced)) + geom_point() +
   geom_smooth(method = lm, se = FALSE, fullrange = TRUE, level = 0.95, color = "grey") +
   labs(title = "Egg Production versus Initial Weight for CAL1 Overall", x="Initial Weight (mg)", y = "Eggs Produced")+
   theme_classic()
 print(initial_vs_eggs_scatter_CAL1_main)
 
-initial_vs_eggs_scatter_CAL1_bovine <-ggplot(CAL_1_Bovine, aes(x=Initial_Weight, y=Eggs_Produced)) + geom_point() +
-  geom_smooth(method = lm, se = FALSE, fullrange = TRUE, level = 0.95, color = "grey") +
-  labs(title = "Egg Production versus Initial Weight for CAL1 Bovine", x="Initial Weight (mg)", y = "Eggs Produced")+
-  theme_classic()
-print(initial_vs_eggs_scatter_CAL1_bovine)
-
-initial_vs_eggs_scatter_CAL1_goose <-ggplot(CAL_1_Goose, aes(x=Initial_Weight, y=Eggs_Produced)) + geom_point() +
-  geom_smooth(method = lm, se = FALSE, fullrange = TRUE, level = 0.95, color = "grey") +
-  labs(title = "Egg Production versus Initial Weight for CAL1 Goose", x="Initial Weight (mg)", y = "Eggs Produced")+
-  theme_classic()
-print(initial_vs_eggs_scatter_CAL1_goose)
-
-initial_vs_eggs_scatter_Evanston_main <-ggplot(Evanston_outlier_removed, aes(x=Initial_Weight, y=Eggs_Produced)) + geom_point() +
+initial_vs_eggs_scatter_Evanston_main <-ggplot(Evanston, aes(x=Initial_Weight, y=Eggs_Produced)) + geom_point() +
   geom_smooth(method = lm, se = FALSE, fullrange = TRUE, level = 0.95, color = "grey") +
   labs(title = "Egg Production versus Initial Weight for Evanston Overall", x="Initial Weight (mg)", y = "Eggs Produced")+
   theme_classic()
 print(initial_vs_eggs_scatter_Evanston_main)
 
-initial_vs_eggs_scatter_Evanston_bovine <- ggplot(Evanston_Bovine, aes(x=Initial_Weight, y=Eggs_Produced)) + geom_point() +
-  geom_smooth(method = lm, se = FALSE, fullrange = TRUE, level = 0.95, color = "grey") +
-  labs(title = "Egg Production versus Initial Weight for Evanston Bovine", x="Initial Weight (mg)", y = "Eggs Produced")+
-  theme_classic()
-print(initial_vs_eggs_scatter_Evanston_bovine)
-
-initial_vs_eggs_scatter_Evanston_goose <- ggplot(Evanston_Goose_Removed_Outlier, aes(x=Initial_Weight, y=Eggs_Produced)) + geom_point() +
-  geom_smooth(method = lm, se = FALSE, fullrange = TRUE, level = 0.95, color = "grey") +
-  labs(title = "Egg Production versus Initial Weight for Evanston Goose", x="Initial Weight (mg)", y = "Eggs Produced")+
-  theme_classic()
-print(initial_vs_eggs_scatter_Evanston_goose)
-
 #Initial Weight vs. Amount of Blood Imbibed Scatterplots
-initial_vs_imbibed_main <- ggplot(Exp_3_Data, aes(x=Blood_Imbibed, y=Initial_Weight)) + geom_point() +
-  geom_smooth(method = lm, se = FALSE, fullrange = TRUE, level = 0.95, color = "grey") +
-  labs(title = "Blood Imbibed versus Initial Weight Overall", x="Blood Imbibed (mg)", y = "Initial Weight (mg)")+
-  theme_classic()
-print(initial_vs_imbibed_main)
 
 initial_vs_imbibed_CAL1_main <-ggplot(CAL_1, aes(x=Blood_Imbibed, y=Initial_Weight)) + geom_point() +
   geom_smooth(method = lm, se = FALSE, fullrange = TRUE, level = 0.95, color = "grey") +
@@ -199,90 +167,74 @@ initial_vs_imbibed_CAL1_main <-ggplot(CAL_1, aes(x=Blood_Imbibed, y=Initial_Weig
   theme_classic()
 print(initial_vs_imbibed_CAL1_main)
 
-initial_vs_imbibed_CAL1_bovine <-ggplot(CAL_1_Bovine, aes(x=Blood_Imbibed, y=Initial_Weight)) + geom_point() +
-  geom_smooth(method = lm, se = FALSE, fullrange = TRUE, level = 0.95, color = "grey") +
-  labs(title = "Blood Imbibed versus Initial Weight for CAL1 Bovine", x="Blood Imbibed (mg)", y = "Initial Weight (mg)")+
-  theme_classic()
-print(initial_vs_imbibed_CAL1_bovine)
-
-initial_vs_imbibed_CAL1_goose <-ggplot(CAL_1_Goose, aes(x=Blood_Imbibed, y=Initial_Weight)) + geom_point() +
-  geom_smooth(method = lm, se = FALSE, fullrange = TRUE, level = 0.95, color = "grey") +
-  labs(title = "Blood Imbibed versus Initial Weight Overall", x="Blood Imbibed (mg)", y = "Initial Weight (mg)")+
-  theme_classic()
-print(initial_vs_imbibed_CAL1_goose)
-
-initial_vs_imbibed_Evanston_main <-ggplot(Evanston_outlier_removed, aes(x=Blood_Imbibed, y=Initial_Weight)) + geom_point() +
+initial_vs_imbibed_Evanston_main <-ggplot(Evanston, aes(x=Blood_Imbibed, y=Initial_Weight)) + geom_point() +
   geom_smooth(method = lm, se = FALSE, fullrange = TRUE, level = 0.95, color = "grey") +
   labs(title = "Blood Imbibed versus Initial Weight for Evanston Overall", x="Blood Imbibed (mg)", y = "Initial Weight (mg)")+
   theme_classic()
 print(initial_vs_imbibed_Evanston_main)
 
-initial_vs_imbibed_Evanston_bovine <-ggplot(Evanston_Bovine, aes(x=Blood_Imbibed, y=Initial_Weight)) + geom_point() +
-  geom_smooth(method = lm, se = FALSE, fullrange = TRUE, level = 0.95, color = "grey") +
-  labs(title = "Blood Imbibed versus Initial Weight for Evanston Bovine", x="Blood Imbibed (mg)", y = "Initial Weight (mg)")+
-  theme_classic()
-print(initial_vs_imbibed_Evanston_bovine)
-
-initial_vs_imbibed_Evanston_goose <-ggplot(Evanston_Goose, aes(x=Blood_Imbibed, y=Initial_Weight)) + geom_point() +
-  geom_smooth(method = lm, se = FALSE, fullrange = TRUE, level = 0.95, color = "grey") +
-  labs(title = "Blood Imbibed versus Initial Weight for Evanston Goose", x="Blood Imbibed (mg)", y = "Initial Weight (mg)")+
-  theme_classic()
-print(initial_vs_imbibed_CAL1_goose)
-
-
 # Histograms of Populations In Terms of Blood Imbibed As A Whole ----------
-hist(Exp_3_Data$Blood_Imbibed, main = "Blood Imbibed Across Populations", xlab = "Amount Imbibed (mg)", breaks = 12, xlim = c(0, 5))
-hist( CAL_1_Bovine$Blood_Imbibed, main = "CAl 1 Imbibed Bovine Blood Distribution", xlab = "Amount Imbibed (mg)", breaks = seq(0,5.5, by =0.5), ylim = c(0,20))#adding more break, keep consistent, xaxt
-hist( CAL_1_Goose$Blood_Imbibed, main = "CAL 1 Imbibed Goose Blood Distribution", xlab = "Amount Imbibed (mg)", breaks = seq(0,5.5, by =0.5), ylim = c(0,20))
-hist( Evanston_Bovine$Blood_Imbibed, main = "Evanston Imbibed Bovine Blood Distribution", xlab = "Amount Imbibed (mg)", breaks = seq(0,5.5, by =0.5), ylim = c(0,20))
-hist( Evanston_Goose_Removed_Outlier$Blood_Imbibed, main = "Evanston Imbibed Goose Blood Distribution", xlab = "Amount Imbibed (mg)", breaks = seq(0,5.5, by =0.5), ylim = c(0,20))
+hist(Exp_3_Data_Outlier_Removed$Blood_Imbibed, main = "Blood Imbibed Across Populations", xlab = "Amount Imbibed (mg)", breaks = 12, xlim = c(0, 5))
+hist(CAL_1_Bovine$Blood_Imbibed, main = "CAl 1 Imbibed Bovine Blood Distribution", xlab = "Amount Imbibed (mg)", breaks = seq(0,5.5, by =0.5), ylim = c(0,20))#adding more break, keep consistent, xaxt
+hist(CAL_1_Goose$Blood_Imbibed, main = "CAL 1 Imbibed Goose Blood Distribution", xlab = "Amount Imbibed (mg)", breaks = seq(0,5.5, by =0.5), ylim = c(0,20))
+hist(Evanston_Bovine$Blood_Imbibed, main = "Evanston Imbibed Bovine Blood Distribution", xlab = "Amount Imbibed (mg)", breaks = seq(0,5.5, by =0.5), ylim = c(0,20))
+hist(Evanston_Goose$Blood_Imbibed, main = "Evanston Imbibed Goose Blood Distribution", xlab = "Amount Imbibed (mg)", breaks = seq(0,5.5, by =0.5), ylim = c(0,20))
 
-# Full Models -------------------------------------------------------------
-model_Full1_Gau <- lmer(Blood_Imbibed ~ 1 + Strain*Blood_Type + (1|Replicate), data = Exp_3_Data_Outlier_Removed)
+# Full Models Exploration -------------------------------------------------------------
+model_Full1_Gau <- lmer(Blood_Imbibed ~ 1 + Strain*Blood_Type*Initial_Weight + (1|Replicate), data = Exp_3_Data_Outlier_Removed)
 summary(model_Full1_Gau)
 
-model_Full1_TransGau <- lmer(Blood_Imbibed ~ 1 + Strain*Blood_Type + (1|Replicate), data = Exp_3_Data_Outlier_Removed)
-summary(model_Full1_TransGau)
-
-model_Full1_Gam <- glmer(Blood_Imbibed ~ 1 + Strain*Blood_Type + (1|Replicate), data = Exp_3_Data_Outlier_Removed, family = Gamma)
+model_Full1_Gam <- glmer(Blood_Imbibed ~ 1 + Strain*Blood_Type*Initial_Weight + (1|Replicate), data = Exp_3_Data_Outlier_Removed, family = Gamma)
 summary(model_Full1_Gam)
 
-model_Full1_LogNorm <- glmer(Blood_Imbibed ~ 1 + Strain*Blood_Type + (1|Replicate), data = Exp_3_Data_Outlier_Removed, family = gaussian(link = "log"))
+model_Full1_LogNorm <- lmer(log(Blood_Imbibed) ~ 1 + Strain*Blood_Type*Initial_Weight + (1|Replicate), data = Exp_3_Data_Outlier_Removed)
 summary(model_Full1_LogNorm)
+plot(model_Full1_LogNorm)
+qqnorm(resid(model_Full1_LogNorm))
+qqline(resid(model_Full1_LogNorm))
 
-model_Full2_LogNorm <- lmer(log(Blood_Imbibed) ~ 1 + Strain*Blood_Type + (1|Replicate), data = Exp_3_Data_Outlier_Removed)
+AIC(model_Full1_Gam, model_Full1_Gau, model_Full1_LogNorm)
+BIC(model_Full1_Gam, model_Full1_Gau, model_Full1_LogNorm)
+
+
+#Further Model Selection - lmer vs. glm
+model_Full2_LogNorm <- lmer(log(Blood_Imbibed) ~ 1 + Strain*Blood_Type + Initial_Weight + (1|Replicate), data = Exp_3_Data_Outlier_Removed)
 summary(model_Full2_LogNorm)
-plot(model_Full2_LogNorm)
 qqnorm(resid(model_Full2_LogNorm))
 qqline(resid(model_Full2_LogNorm))
-model_Full3_LogNorm <- lmer(log(Blood_Imbibed) ~ 1 + Initial_Weight*Blood_Type + (1|Replicate), data = Exp_3_Data_Outlier_Removed)
+
+model_Full3_LogNorm <- glm(log(Blood_Imbibed) ~ 1 + Strain*Initial_Weight + Blood_Type + (1|Replicate), data = Exp_3_Data_Outlier_Removed)
 summary(model_Full3_LogNorm)
 
-model_Full4_LogNorm <- glm(log(Blood_Imbibed) ~ 1 + Strain*Blood_Type + (1|Replicate), data = Exp_3_Data_Outlier_Removed)
+
+
+model_Full4_LogNorm <- glm(log(Blood_Imbibed) ~ 1 + Strain*Blood_Type + Initial_Weight + (1|Replicate), data = Exp_3_Data_Outlier_Removed)
 summary(model_Full4_LogNorm)
+qqnorm(resid(model_Full4_LogNorm))
+qqline(resid(model_Full4_LogNorm))
 
-AIC(model_Full1_Gam, model_Full1_TransGau, model_Full1_LogNorm, model_Full2_LogNorm, model_Full3_LogNorm, model_Full4_LogNorm)
-BIC(model_Full1_Gam, model_Full1_TransGau, model_Full1_LogNorm, model_Full2_LogNorm, model_Full3_LogNorm, model_Full4_LogNorm)
-BIC(model_Full1_Gam, model_Full1_TransGau)
-plot(model_Full4_LogNorm)
 
-model_full1 <- lmer(Blood_Imbibed ~ 1 + Strain*Blood_Type + Initial_Weight + (1|Replicate), data = Exp_3_Data_Outlier_Removed)
-summary(model_full1)
+AIC(model_Full1_LogNorm, model_Full2_LogNorm, model_Full3_LogNorm, model_Full4_LogNorm)
+BIC(model_Full1_LogNorm, model_Full2_LogNorm, model_Full3_LogNorm, model_Full4_LogNorm)
 
-model_full2 <- lmer(Blood_Imbibed ~ 1 + Strain*Blood_Type + (1|Replicate), data = Exp_3_Data_Outlier_Removed)
-summary(model_full2)
-anova(model_full2)
-qqnorm(model_full2)
 
-model_full3 <- lmer(Blood_Imbibed ~ 1 +Strain*Initial_Weight + (1|Replicate), data = Exp_3_Data_Outlier_Removed)
-summary(model_full3)
+# Model Reduction for Analysis --------------------------------------------------------
 
-model_full4 <- lmer (Blood_Imbibed ~ 1 + Initial_Weight*Blood_Type + (1|Replicate), data = Exp_3_Data_Outlier_Removed)
-summary(model_full4)
+model_reduced1 <- glm(log(Blood_Imbibed) ~ 1 + Strain * Blood_Type + (1|Replicate), data = Exp_3_Data_Outlier_Removed)
+summary(model_reduced1)
+anova(model_Full4_LogNorm, model_reduced1, test = "Chisq") #eliminate initial weight, no diff in model so Initial weight not that important
 
-AIC(model_full1, model_full2, model_full3, model_full4, model_Full4_LogNorm) #model_full2; UPDATE: model_Full4_LogNorm is the best
-BIC(model_full1, model_full2, model_full3, model_full4, model_Full4_LogNorm) #again model_full2 best fit; model_FUll4_LogNorm is the best
+model_reduced2 <- glm(log(Blood_Imbibed) ~ 1 + Strain + Blood_Type + (1|Replicate), data = Exp_3_Data_Outlier_Removed)
+summary(model_reduced2)
+anova(model_reduced1, model_reduced2, test = "Chisq") #no diff after interaction term removal, so also not that important 
 
+model_reduced3 <- glm(log(Blood_Imbibed) ~ 1 + Strain + (1|Replicate), data = Exp_3_Data_Outlier_Removed)
+summary(model_reduced2)
+anova(model_reduced2, model_reduced3, test = "Chisq") #sig diff after removal of Blood_Type, so that term is important
+
+model_reduced4 <- glm(log(Blood_Imbibed) ~ 1 + Blood_Type + (1|Replicate), data = Exp_3_Data_Outlier_Removed)
+summary(model_reduced2)
+anova(model_reduced2, model_reduced4, test = "Chisq") #no diff after removal of strain, so that term is important
 
 
 #Figure 3 for Pub - Amt blood by population and blood type
@@ -333,24 +285,61 @@ png(filename = 'Figure_4_EggsProduced_by_BloodmealMass.png', units="in", width=8
 multiplot(imbibed_vs_eggs_scatter_CAL1_main, imbibed_vs_eggs_scatter_Evanston_main)
 dev.off() 
 
+#Supplementary Figure - eggs produced by initial weight
 
-# Model Reductions --------------------------------------------------------
-model_reduced1 <- glm(log(Blood_Imbibed) ~ 1 + Strain + Blood_Type + (1|Replicate), data = Exp_3_Data)
-summary(model_reduced1)
-anova(model_Full4_LogNorm, model_reduced1, test = "Chisq") #eliminate interaction term; interaction term is important
+png(filename = "Supp_Fig_EggsProduced_by_InitialWeight.png", units = "px", height = 900, width = 900)
+initial_vs_eggs_scatter_CAL1_bovine <-ggplot(CAL1_With_eggs_bovine, aes(x=Initial_Weight, y=Eggs_Produced)) + geom_point() +
+  geom_smooth(method = lm, se = FALSE, fullrange = TRUE, level = 0.95, color = "grey") +
+  labs(title = "CAL1 Bovine", x="Initial Weight (mg)", y = "Eggs Produced")+
+  theme_classic()
 
-model_reduced2 <- glm(log(Blood_Imbibed) ~ 1 + Strain + (1|Replicate), data = Exp_3_Data)
-summary(model_reduced2)
-anova(model_Full4_LogNorm, model_reduced2, test = "Chisq") #Blood_Type is important
+initial_vs_eggs_scatter_CAL1_goose <-ggplot(CAL1_With_eggs_goose, aes(x=Initial_Weight, y=Eggs_Produced)) + geom_point() +
+  geom_smooth(method = lm, se = FALSE, fullrange = TRUE, level = 0.95, color = "grey") +
+  labs(title = "CAL1 Goose", x="Initial Weight (mg)", y = "Eggs Produced")+
+  theme_classic()
 
-model_reduced3 <- glm(log(Blood_Imbibed) ~ 1 + Blood_Type + (1|Replicate), data = Exp_3_Data)
-summary(model_reduced3)
-anova(model_Full4_LogNorm, model_reduced3, test = "Chisq") #Strain is important
+initial_vs_eggs_scatter_Evanston_bovine <- ggplot(Evanston_With_eggs_bovine, aes(x=Initial_Weight, y=Eggs_Produced)) + geom_point() +
+  geom_smooth(method = lm, se = FALSE, fullrange = TRUE, level = 0.95, color = "grey") +
+  labs(title = "Evanston Bovine", x="Initial Weight (mg)", y = "Eggs Produced")+
+  theme_classic()
 
-plot(model_reduced3)
-#new model is still model_Full4_LogNorm
+initial_vs_eggs_scatter_Evanston_goose <- ggplot(Evanston_With_eggs_goose, aes(x=Initial_Weight, y=Eggs_Produced)) + geom_point() +
+  geom_smooth(method = lm, se = FALSE, fullrange = TRUE, level = 0.95, color = "grey") +
+  labs(title = "Evanston Goose", x="Initial Weight (mg)", y = "Eggs Produced")+
+  theme_classic()
 
-# Correlation Tests -------------------------------------------------------
+multiplot(initial_vs_eggs_scatter_CAL1_bovine,initial_vs_eggs_scatter_CAL1_goose,initial_vs_eggs_scatter_Evanston_bovine,initial_vs_eggs_scatter_Evanston_goose, cols=2)
+
+dev.off()
+
+#Supplementary Figure - Blood imbibed by initial weight
+
+initial_vs_imbibed_CAL1_bovine <-ggplot(CAL_1_Bovine, aes(x=Blood_Imbibed, y=Initial_Weight)) + geom_point() +
+  geom_smooth(method = lm, se = FALSE, fullrange = TRUE, level = 0.95, color = "grey") +
+  labs(title = "Blood Imbibed versus Initial Weight for CAL1 Bovine", x="Blood Imbibed (mg)", y = "Initial Weight (mg)")+
+  theme_classic()
+print(initial_vs_imbibed_CAL1_bovine)
+
+initial_vs_imbibed_CAL1_goose <-ggplot(CAL_1_Goose, aes(x=Blood_Imbibed, y=Initial_Weight)) + geom_point() +
+  geom_smooth(method = lm, se = FALSE, fullrange = TRUE, level = 0.95, color = "grey") +
+  labs(title = "Blood Imbibed versus Initial Weight Overall", x="Blood Imbibed (mg)", y = "Initial Weight (mg)")+
+  theme_classic()
+print(initial_vs_imbibed_CAL1_goose)
+
+initial_vs_imbibed_Evanston_bovine <-ggplot(Evanston_Bovine, aes(x=Blood_Imbibed, y=Initial_Weight)) + geom_point() +
+  geom_smooth(method = lm, se = FALSE, fullrange = TRUE, level = 0.95, color = "grey") +
+  labs(title = "Blood Imbibed versus Initial Weight for Evanston Bovine", x="Blood Imbibed (mg)", y = "Initial Weight (mg)")+
+  theme_classic()
+print(initial_vs_imbibed_Evanston_bovine)
+
+initial_vs_imbibed_Evanston_goose <-ggplot(Evanston_Goose, aes(x=Blood_Imbibed, y=Initial_Weight)) + geom_point() +
+  geom_smooth(method = lm, se = FALSE, fullrange = TRUE, level = 0.95, color = "grey") +
+  labs(title = "Blood Imbibed versus Initial Weight for Evanston Goose", x="Blood Imbibed (mg)", y = "Initial Weight (mg)")+
+  theme_classic()
+print(initial_vs_imbibed_CAL1_goose)
+
+
+# Calculating the correlations between num eggs produced and amt blood imbibed -------------------------------------------------------
 
 #Correlation Between Eggs Produced and Blood Imbibed
 cor.test(With_eggs$Eggs_Produced, With_eggs$Blood_Imbibed, method = "pearson")
@@ -385,30 +374,3 @@ cor.test(CAL1_With_eggs_goose$Initial_Weight, CAL1_With_eggs_goose$Blood_Imbibed
 cor.test(Evanston_With_eggs$Initial_Weight, Evanston_With_eggs$Blood_Imbibed, method = "pearson")
 cor.test(Evanston_With_eggs_bovine$Initial_Weight, Evanston_With_eggs_bovine$Blood_Imbibed, method = "pearson")
 cor.test(Evanston_With_eggs_goose$Initial_Weight, Evanston_With_eggs_goose$Blood_Imbibed, method = "pearson")
-# T-Tests -----------------------------------------------------------------
-t.test(Blood_Imbibed~Blood_Type, data = Evanston)
-t.test(Blood_Imbibed~Blood_Type, data = CAL_1)
-
-t.test(data= Evanston, Initial_Weight~Blood_Type)
-t.test(data = CAL_1, Initial_Weight~Blood_Type)
-
-# ANOVA -------------------------------------------------------------------
-#analyzing whether variances are similar, with a nonparametric assumption (Fligner-Killen Test)
-fligner.test(Blood_Imbibed ~ Strain, data = Exp_3_Data)
-#p-value = 0.02, variance significantly different (ANOVA may not work)
-
-#this is used for Figure 15
-anov_model_1 <- aov(Blood_Imbibed~Blood_Type*Strain, data = Exp_3_Data)
-summary(anov_model_1) 
-plot(anov_model_1)
-
-anov_model_1 <- aov(Blood_Imbibed~Blood_Type*Strain, data = Exp_3_Data_Outlier_Removed)
-summary(anov_model_1)
-#this is used for Figure 16
-anov_model_2 <- aov(Eggs_Produced~Blood_Type*Strain, data = With_eggs)
-summary(anov_model_2)
-plot(anov_model_2)
-
-# 07/16/2018: remove titles of all graphs
-#07162018: look at the outliers; for poster, report model results with outliers included but verbally acknowledge how to handle outliers
-#07162018: include DF
