@@ -61,8 +61,8 @@ multiplot <- function(..., plotlist=NULL, file, cols=1, layout=NULL) {
 
 # Set Up and Working Directories and Libraries-----------------------------------------
 
-#setwd("~/Desktop/Mervin-Culex_Fitness_By_Blood")#Mervin uses this
-setwd("~/Desktop/Culex_Fitness_By_Blood")#Megan uses this
+setwd("~/Desktop/Mervin-Culex_Fitness_By_Blood")#Mervin uses this
+#setwd("~/Desktop/Culex_Fitness_By_Blood")#Megan uses this
 
 Exp_3_Data <- read.csv(file="./data/Exp3_CSV_Blood_Meal_Weight_Data.csv", header = T)
 head(Exp_3_Data)
