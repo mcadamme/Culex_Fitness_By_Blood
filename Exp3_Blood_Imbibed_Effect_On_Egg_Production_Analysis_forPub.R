@@ -205,7 +205,6 @@ BIC(model_Full1_Gam, model_Full1_Gau)
 
 
 #Model Reduction using gamma dist for Statistical Analysis --------------------------------------------------------
-#Do I need an F-test or Chisq with the gamma dist?
 
 model_red1_Gam <- glm(Blood_Imbibed ~ 1 + Strain*Blood_Type+Initial_Weight, data = Exp_3_Data_Outlier_Removed, family = Gamma)
 summary(model_red1_Gam)
