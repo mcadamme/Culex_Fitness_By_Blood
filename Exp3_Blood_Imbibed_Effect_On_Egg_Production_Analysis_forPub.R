@@ -205,26 +205,27 @@ BIC(model_Full1_Gam, model_Full1_Gau)
 
 
 #Model Reduction using gamma dist for Statistical Analysis --------------------------------------------------------
+#Do I need an F-test or Chisq with the gamma dist?
 
 model_red1_Gam <- glm(Blood_Imbibed ~ 1 + Strain*Blood_Type+Initial_Weight, data = Exp_3_Data_Outlier_Removed, family = Gamma)
 summary(model_red1_Gam)
-anova(model_Full1_Gam,model_red1_Gam, test = "Chisq") #no diff between models when initial weight is removed from interaction, so not important
+anova(model_Full1_Gam,model_red1_Gam, test = "LRT") #no diff between models when initial weight is removed from interaction, so not important
 
 model_red2_Gam <- glm(Blood_Imbibed ~ 1 + Strain*Blood_Type, data = Exp_3_Data_Outlier_Removed, family = Gamma)
 summary(model_red2_Gam)
-anova(model_red1_Gam, model_red2_Gam, test = "Chisq") #no diff between models with initial weight removed altogether, so not important
+anova(model_red1_Gam, model_red2_Gam, test = "LRT") #no diff between models with initial weight removed altogether, so not important
 
 model_red3_Gam <- glm(Blood_Imbibed ~ 1 + Strain + Blood_Type, data = Exp_3_Data_Outlier_Removed, family = Gamma)
 summary(model_red3_Gam)
-anova(model_red2_Gam, model_red3_Gam, test = "Chisq")
+anova(model_red2_Gam, model_red3_Gam, test = "LRT")
 
 model_red4_Gam <- glm(Blood_Imbibed ~ 1 + Blood_Type, data = Exp_3_Data_Outlier_Removed, family = Gamma)
 summary(model_red4_Gam)
-anova(model_red4_Gam, model_red3_Gam, test = "Chisq") #strain is marginally significant
+anova(model_red4_Gam, model_red3_Gam, test = "LRT") #strain is marginally significant
 
 model_red5_Gam <- glm(Blood_Imbibed ~ 1 + Strain, data = Exp_3_Data_Outlier_Removed, family = Gamma)
 summary(model_red5_Gam)
-anova(model_red5_Gam, model_red3_Gam, test = "Chisq") #blood type is marginally significant
+anova(model_red5_Gam, model_red3_Gam, test = "LRT") #blood type is marginally significant
 
 
 #Figure 3 for Pub - Amt blood by population and blood type
