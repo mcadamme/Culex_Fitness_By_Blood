@@ -3,7 +3,7 @@
 #M. K. Cuadera and M. L. Fritz
 
 #packages required: ggplot2, plyr, lme4
-library(ggplot2); library(plyr); library(lme4)
+library(ggplot2); library(plyr); library(lme4); library(MASS)
 
 #required functions
 
@@ -61,8 +61,8 @@ multiplot <- function(..., plotlist=NULL, file, cols=1, layout=NULL) {
 
 # Set Up and Working Directories and Libraries-----------------------------------------
 
-setwd("~/Desktop/Mervin-Culex_Fitness_By_Blood")#Mervin uses this
-#setwd("~/Desktop/Culex_Fitness_By_Blood")#Megan uses this
+#setwd("~/Desktop/Mervin-Culex_Fitness_By_Blood")#Mervin uses this
+setwd("~/Desktop/Culex_Fitness_By_Blood")#Megan uses this
 
 Exp_3_Data <- read.csv(file="./data/Exp3_CSV_Blood_Meal_Weight_Data.csv", header = T)
 head(Exp_3_Data)
@@ -255,6 +255,54 @@ multiplot(p1,p2, cols = 1)
 
 dev.off()
 
+
+#####Initial model selection for egg production analysis
+
+model_Full2_Gau <- glm(Eggs_Produced ~ 1 + Strain*Blood_Type*Blood_Imbibed, data = With_eggs)
+summary(model_Full2_Gau)
+qqnorm(resid(model_Full2_Gau))
+qqline(resid(model_Full2_Gau))
+
+model_Full2_Gam <- glm(Eggs_Produced ~ 1 + Strain*Blood_Type*Blood_Imbibed, data = With_eggs, family = Gamma(link = log))
+summary(model_Full2_Gam)
+qqnorm(resid(model_Full2_Gam))
+qqline(resid(model_Full2_Gam))
+
+model_Full2_Pois <- glm(Eggs_Produced ~ 1 + Strain*Blood_Type*Blood_Imbibed, data = With_eggs, family = poisson)
+summary(model_Full2_Pois)
+qqnorm(resid(model_Full2_Pois))
+qqline(resid(model_Full2_Pois))
+
+model_Full2_nbi <- glm.nb(Eggs_Produced ~ 1 + Strain*Blood_Type*Blood_Imbibed, data = With_eggs)
+summary(model_Full2_nbi)
+qqnorm(resid(model_Full2_nbi))
+qqline(resid(model_Full2_nbi))
+
+AIC(model_Full2_Gam, model_Full2_Gau, model_Full2_Pois, model_Full2_nbi)
+BIC(model_Full2_Gam, model_Full2_Gau, model_Full2_Pois, model_Full2_nbi)
+
+#model_Full2_nbi looks best of these, no overdispersion.  Going to use that one.
+
+##Model Reduction
+nbi_red2 <- glm.nb(Eggs_Produced ~ 1 + Strain+Blood_Type*Blood_Imbibed, data = With_eggs)
+summary(nbi_red2)
+anova(model_Full2_nbi, nbi_red2, test = "Chisq")#strain does not significantly influence as interaction.
+
+nbi_red3 <- glm.nb(Eggs_Produced ~ 1 + Blood_Type*Blood_Imbibed, data = With_eggs)
+summary(nbi_red3)
+anova(nbi_red2, nbi_red3, test = "Chisq")#strain significantly influences num eggs
+
+nbi_red4 <- glm.nb(Eggs_Produced~ 1 + Strain+Blood_Type+Blood_Imbibed, data = With_eggs)
+summary(nbi_red4)
+anova(nbi_red2, nbi_red4, test = "Chisq")#Not a significant interaction
+
+nbi_red5 <- glm.nb(Eggs_Produced~ 1 + Strain+Blood_Imbibed, data = With_eggs)
+summary(nbi_red5)
+anova(nbi_red4, nbi_red5, test= "Chisq") #blood type matters
+
+nbi_red6 <- glm.nb(Eggs_Produced~ 1 + Strain+Blood_Type, data = With_eggs)
+summary(nbi_red6)
+anova(nbi_red4, nbi_red6, test = "Chisq") #Amt blood imbibed matters too.
 
 #Figure 4 - Eggs_produced_by blood meal mass
 imbibed_vs_eggs_scatter_CAL1_main <- ggplot(CAL1_With_eggs, aes(x=Blood_Imbibed, y=Eggs_Produced, color = Blood_Type, shape = Blood_Type)) + geom_point() +
