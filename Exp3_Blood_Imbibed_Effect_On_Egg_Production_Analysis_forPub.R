@@ -3,7 +3,7 @@
 #M. K. Cuadera and M. L. Fritz
 
 #packages required: ggplot2, plyr, lme4
-library(ggplot2); library(plyr); library(lme4); library(MASS)
+library(ggplot2); library(plyr); library(lme4); library(MASS); library(lmtest)
 
 #required functions
 
@@ -61,8 +61,8 @@ multiplot <- function(..., plotlist=NULL, file, cols=1, layout=NULL) {
 
 # Set Up and Working Directories and Libraries-----------------------------------------
 
-#setwd("~/Desktop/Mervin-Culex_Fitness_By_Blood")#Mervin uses this
-setwd("~/Desktop/Culex_Fitness_By_Blood")#Megan uses this
+setwd("~/Desktop/Mervin-Culex_Fitness_By_Blood")#Mervin uses this
+#setwd("~/Desktop/Culex_Fitness_By_Blood")#Megan uses this
 
 Exp_3_Data <- read.csv(file="./data/Exp3_CSV_Blood_Meal_Weight_Data.csv", header = T)
 head(Exp_3_Data)
@@ -208,23 +208,23 @@ BIC(model_Full1_Gam, model_Full1_Gau)
 
 model_red1_Gam <- glm(Blood_Imbibed ~ 1 + Strain*Blood_Type+Initial_Weight, data = Exp_3_Data_Outlier_Removed, family = Gamma)
 summary(model_red1_Gam)
-anova(model_Full1_Gam,model_red1_Gam, test = "LRT") #no diff between models when initial weight is removed from interaction, so not important
+lrtest(model_red1_Gam, model_Full1_Gam) #no diff between models when initial weight is removed from interaction, so not important
 
 model_red2_Gam <- glm(Blood_Imbibed ~ 1 + Strain*Blood_Type, data = Exp_3_Data_Outlier_Removed, family = Gamma)
 summary(model_red2_Gam)
-anova(model_red1_Gam, model_red2_Gam, test = "LRT") #no diff between models with initial weight removed altogether, so not important
+lrtest(model_red2_Gam, model_red1_Gam) #no diff between models with initial weight removed altogether, so not important
 
 model_red3_Gam <- glm(Blood_Imbibed ~ 1 + Strain + Blood_Type, data = Exp_3_Data_Outlier_Removed, family = Gamma)
 summary(model_red3_Gam)
-anova(model_red2_Gam, model_red3_Gam, test = "LRT")
+lrtest(model_red3_Gam, model_red2_Gam)
 
 model_red4_Gam <- glm(Blood_Imbibed ~ 1 + Blood_Type, data = Exp_3_Data_Outlier_Removed, family = Gamma)
 summary(model_red4_Gam)
-anova(model_red4_Gam, model_red3_Gam, test = "LRT") #strain is marginally significant
+lrtest(model_red4_Gam, model_red3_Gam) #strain is marginally significant
 
 model_red5_Gam <- glm(Blood_Imbibed ~ 1 + Strain, data = Exp_3_Data_Outlier_Removed, family = Gamma)
 summary(model_red5_Gam)
-anova(model_red5_Gam, model_red3_Gam, test = "LRT") #blood type is marginally significant
+lrtest(model_red3_Gam,model_red5_Gam) #blood type is marginally significant
 
 
 #Figure 3 for Pub - Amt blood by population and blood type
@@ -281,7 +281,7 @@ qqline(resid(model_Full2_nbi))
 AIC(model_Full2_Gam, model_Full2_Gau, model_Full2_Pois, model_Full2_nbi)
 BIC(model_Full2_Gam, model_Full2_Gau, model_Full2_Pois, model_Full2_nbi)
 
-#model_Full2_nbi looks best of these, no overdispersion.  Going to use that one.
+#model_Full2_nbi looks best of these according to ICs, no overdispersion.  Going to use that one.
 
 ##Model Reduction
 nbi_red2 <- glm.nb(Eggs_Produced ~ 1 + Strain+Blood_Type*Blood_Imbibed, data = With_eggs)
@@ -295,6 +295,8 @@ anova(nbi_red2, nbi_red3, test = "Chisq")#strain significantly influences num eg
 nbi_red4 <- glm.nb(Eggs_Produced~ 1 + Strain+Blood_Type+Blood_Imbibed, data = With_eggs)
 summary(nbi_red4)
 anova(nbi_red2, nbi_red4, test = "Chisq")#Not a significant interaction
+
+exp(coef(nbi_red4))#getting backtransformed model coefficients.
 
 nbi_red5 <- glm.nb(Eggs_Produced~ 1 + Strain+Blood_Imbibed, data = With_eggs)
 summary(nbi_red5)
