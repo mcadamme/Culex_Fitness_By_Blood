@@ -378,6 +378,10 @@ initial_vs_imbibed_Evanston_goose <-ggplot(Evanston_Goose, aes(x=Blood_Imbibed, 
   theme_classic()
 print(initial_vs_imbibed_CAL1_goose)
 
+png(filename = "Supp_Fig_BloodImbibed_by_InitialWeight.png", units="px", width=800, height=500)
+multiplot(initial_vs_imbibed_CAL1_bovine, initial_vs_imbibed_CAL1_goose, initial_vs_imbibed_Evanston_bovine,initial_vs_imbibed_Evanston_goose, cols = 2)
+dev.off() 
+
 
 # Calculating the correlations between num eggs produced and amt blood imbibed -------------------------------------------------------
 
